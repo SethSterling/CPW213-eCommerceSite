@@ -20,6 +20,7 @@ namespace eCommerceSite.Models
         /// <summary>
         /// The price of the product
         /// </summary>
+        [DataType(DataType.Currency)]
         public double Price { get; set; }
         /// <summary>
         /// The category the product falls under.
