@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using eCommerceSite.Data;
 using eCommerceSite.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceSite.Controllers
 {
@@ -19,10 +20,10 @@ namespace eCommerceSite.Controllers
         /// <summary>
         /// Displays a View list all products.
         /// </summary>
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             //Get all products from database
-            List<Product> products = _context.products.ToList();
+            List<Product> products = await _context.products.ToListAsync();
 
             //Send list of products to view to be displayed
             return View(products);
@@ -35,13 +36,13 @@ namespace eCommerceSite.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Product product)
+        public async Task<IActionResult> Add(Product product)
         {
             if (ModelState.IsValid)
             {
                 //Add to DB
                 _context.products.Add(product);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 TempData["Message"] = $"{product.Title} was added successfully";
                 //Redirect back to catalog page
