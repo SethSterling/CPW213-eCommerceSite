@@ -27,8 +27,7 @@ namespace eCommerceSite.Controllers
             const int pageSize = 3;
             //int pageNum = id.HasValue ? id.Value : 1; Ternary
             ViewData["CurrentPage"] = pageNum;
-            int numProducts = await (from p in _context.products
-                                     select p).CountAsync();
+            int numProducts = await ProductDB.GetTotalProductsAsync(_context);
 
             // 10 Products
             // 3 per page
@@ -36,13 +35,7 @@ namespace eCommerceSite.Controllers
             ViewData["MaxPage"] = totalPages;
             //Get all products from database
             //List<Product> products = await _context.products.ToListAsync();
-            List<Product> products =
-                await (from p in _context.products
-                       orderby p.Title ascending
-                       select p)
-                       .Skip(pageSize * (pageNum - 1))
-                       .Take(pageSize)
-                       .ToListAsync();
+            List<Product> products = await ProductDB.GetProductsAsync(_context, pageSize, pageNum);
 
             //Send list of products to view to be displayed
             return View(products);
@@ -59,10 +52,7 @@ namespace eCommerceSite.Controllers
         {
             if (ModelState.IsValid)
             {
-                //Add to DB
-                _context.products.Add(product);
-                await _context.SaveChangesAsync();
-
+                await ProductDB.AddProductAsync(_context, product);
                 TempData["Message"] = $"{product.Title} was added successfully";
                 //Redirect back to catalog page
                 return RedirectToAction("Index");
