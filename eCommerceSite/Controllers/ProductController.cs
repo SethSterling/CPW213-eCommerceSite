@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using eCommerceSite.Data;
 using eCommerceSite.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceSite.Controllers
@@ -18,12 +19,30 @@ namespace eCommerceSite.Controllers
         }
 
         /// <summary>
-        /// Displays a View list all products.
+        /// Displays a View list a page of products.
         /// </summary>
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id)
         {
+            int pageNum = id ?? 1;
+            const int pageSize = 3;
+            //int pageNum = id.HasValue ? id.Value : 1; Ternary
+            ViewData["CurrentPage"] = pageNum;
+            int numProducts = await (from p in _context.products
+                                     select p).CountAsync();
+
+            // 10 Products
+            // 3 per page
+            int totalPages = (int)Math.Ceiling((double)numProducts / pageSize);
+            ViewData["MaxPage"] = totalPages;
             //Get all products from database
-            List<Product> products = await _context.products.ToListAsync();
+            //List<Product> products = await _context.products.ToListAsync();
+            List<Product> products =
+                await (from p in _context.products
+                       orderby p.Title ascending
+                       select p)
+                       .Skip(pageSize * (pageNum - 1))
+                       .Take(pageSize)
+                       .ToListAsync();
 
             //Send list of products to view to be displayed
             return View(products);
