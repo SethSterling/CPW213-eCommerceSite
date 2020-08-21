@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using eCommerceSite.Data;
 using eCommerceSite.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceSite.Controllers
 {
@@ -48,6 +49,38 @@ namespace eCommerceSite.Controllers
         public IActionResult Login()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            //UserAccount account =
+            //    await (from u in _context.UserAccounts
+            //     where (u.Username == model.UsernameOrEmail ||
+            //         u.Email == model.UsernameOrEmail) &&
+            //         u.Password == model.Password
+            //     select u).SingleOrDefaultAsync();
+
+            UserAccount account = await _context.UserAccounts
+                    .Where(userAcc => (userAcc.Username == model.UsernameOrEmail ||
+                                      userAcc.Email == model.UsernameOrEmail) &&
+                                      userAcc.Password == model.Password)
+                    .SingleOrDefaultAsync();
+
+            if(account == null)
+            {
+                //Custom Error message
+                ModelState.AddModelError(string.Empty, "Credentials were not found");
+                return View();
+            }
+
+            //Log user in
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }
