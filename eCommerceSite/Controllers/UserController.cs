@@ -63,6 +63,8 @@ namespace eCommerceSite.Controllers
                 //Add to database
                 _context.UserAccounts.Add(account);
                 await _context.SaveChangesAsync();
+
+                LogUserIn(account.UserId);
                 //Redirect to home page
                 return RedirectToAction("Index", "Home");
             }
@@ -102,18 +104,22 @@ namespace eCommerceSite.Controllers
                                       userAcc.Password == model.Password)
                     .SingleOrDefaultAsync();
 
-            if(account == null)
+            if (account == null)
             {
                 //Custom Error message
                 ModelState.AddModelError(string.Empty, "Credentials were not found");
                 return View();
             }
 
-            //Log user in
-            HttpContext.Session.SetInt32("UserId", account.UserId);
-
+            LogUserIn(account.UserId);
 
             return RedirectToAction("Index", "Home");
+        }
+
+        private void LogUserIn(int accountId)
+        {
+            //Log user in
+            HttpContext.Session.SetInt32("UserId", accountId);
         }
 
         public IActionResult Logout()
