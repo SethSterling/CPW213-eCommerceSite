@@ -33,6 +33,8 @@ namespace eCommerceSite.Controllers
             List<Product> cartProducts = CookieHelper.GetCartProducts(_httpContext);
             CookieHelper.AddProductToCart(_httpContext, p);
 
+            TempData["Message"] = $"{p.Title} was added to your cart";
+
             // Redirect back to previous page
             return RedirectToAction("Index", "Product");
         }
