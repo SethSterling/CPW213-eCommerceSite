@@ -25,7 +25,7 @@ namespace eCommerceSite.Controllers
         /// </summary>
         /// <param name="id">The id of the product to add</param>
         /// <returns></returns>
-        public async Task<IActionResult> Add(int id)
+        public async Task<IActionResult> Add(int id, string prevUrl)
         {
             // Get product from the database
             Product p = await ProductDB.GetProductAsync(_context, id);
@@ -33,8 +33,10 @@ namespace eCommerceSite.Controllers
             List<Product> cartProducts = CookieHelper.GetCartProducts(_httpContext);
             CookieHelper.AddProductToCart(_httpContext, p);
 
+            TempData["Message"] = $"{p.Title} was added to your cart";
+
             // Redirect back to previous page
-            return RedirectToAction("Index", "Product");
+            return Redirect(prevUrl);
         }
 
         public IActionResult Summary()
