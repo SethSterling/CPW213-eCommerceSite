@@ -9,6 +9,8 @@ This is an in-class project for the CPW 213 course. <br>
 - Add products to the database.
 - Update products already in the database.
 - Delete products from the database.
+- Register and Log into accounts
+- Put products into a cart.
 
 ## Prerequisites
 - [.NET Core 3.1.x SDK](https://dotnet.microsoft.com/download)
